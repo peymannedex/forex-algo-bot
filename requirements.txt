@@ -1,0 +1,18 @@
+# Runtime dependencies — Python 3.11+
+# NumPy 2.5+ requires Python 3.12, so Python 3.11 uses the compatible line.
+numpy>=1.26.4,<2.5.0; python_version == "3.11"
+numpy>=2.2.0,<3.0.0; python_version >= "3.12"
+pandas>=3.0.3,<4.0.0
+pyarrow>=25.0.0,<26.0.0
+pydantic>=2.13.4,<3.0.0
+pydantic-settings>=2.14.2,<3.0.0
+python-dateutil>=2.9.0.post0,<3.0.0
+PyYAML>=6.0.2,<7.0.0
+orjson>=3.10.12,<4.0.0
+structlog>=26.1.0,<27.0.0
+tenacity>=9.0.0,<10.0.0
+httpx>=0.28.1,<1.0.0
+websockets>=16.1.1,<17.0.0
+
+# Official MT5 Python bridge (Windows terminal hosts only).
+MetaTrader5>=5.0.5735,<6.0.0; platform_system == "Windows"

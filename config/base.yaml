@@ -1,0 +1,34 @@
+project:
+  name: forex-algo-bot
+  environment: development
+  timezone: UTC
+
+data:
+  reject_locked_quotes: false
+  max_spread_pips: null
+  detect_return_outliers: false
+  drop_return_outliers: false
+  live_queue_size: 100000
+
+  resampling:
+    target_timeframe: 1m
+    late_tick_policy: raise
+    synthesize_empty_bars: false
+
+  storage:
+    root: data/processed/market
+    format: parquet
+    compression: zstd
+    row_group_size: 250000
+    read_batch_size: 65536
+    partitioning:
+      - symbol
+      - year
+      - month
+
+  mt5:
+    enabled: false
+    poll_interval_seconds: 0.10
+    emit_incomplete_bars: true
+    # Credentials and terminal paths belong in config/local.yaml or environment
+    # variables; config/local.yaml is excluded from version control.
