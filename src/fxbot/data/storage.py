@@ -331,7 +331,7 @@ class ParquetPartitionStore:
             return PartitionRef(
                 kind=kind,
                 symbol=values["symbol"],
-                timeframe=values.get("timeframe"),
+                timeframe=values.get("timeframe"),  # type: ignore[arg-type]
                 year=int(values["year"]),
                 month=int(values["month"]),
             )
@@ -543,8 +543,8 @@ def _optional_datetime(value: object) -> datetime | None:
 
 
 def _optional_float(value: object) -> float | None:
-    return None if value is None else float(value)
+    return None if value is None else float(value)  # type: ignore[arg-type]
 
 
 def _optional_int(value: object) -> int | None:
-    return None if value is None else int(value)
+    return None if value is None else int(value)  # type: ignore[call-overload]

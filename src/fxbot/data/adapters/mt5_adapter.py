@@ -340,9 +340,9 @@ class MT5MarketDataAdapter(HistoricalMarketDataAdapter, LiveMarketDataAdapter):
                 tick = self._tick_from_row(symbol, raw_tick, live=True)
                 fallback_msc = int(tick.event_time.timestamp() * 1000)
                 time_msc = int(_field(raw_tick, "time_msc", fallback_msc))
-                signature = (time_msc, tick.bid, tick.ask)
-                if self._last_tick_signature.get(symbol) != signature:
-                    self._last_tick_signature[symbol] = signature
+                bar_signature: Any = (time_msc, tick.bid, tick.ask)
+                if self._last_tick_signature.get(symbol) != tick_signature:
+                    self._last_tick_signature[symbol] = tick_signature
                     records.append(tick)
 
         bar_timeframes = sorted(
@@ -370,7 +370,7 @@ class MT5MarketDataAdapter(HistoricalMarketDataAdapter, LiveMarketDataAdapter):
                         row,
                         complete=not is_current,
                     )
-                    signature = (
+                    bar_signature: Any = (
                         bar.bid.open,
                         bar.bid.high,
                         bar.bid.low,
@@ -378,8 +378,8 @@ class MT5MarketDataAdapter(HistoricalMarketDataAdapter, LiveMarketDataAdapter):
                         bar.tick_volume,
                     )
                     key = (symbol, timeframe, bar.open_time)
-                    if self._last_bar_signature.get(key) != signature:
-                        self._last_bar_signature[key] = signature
+                    if self._last_bar_signature.get(key) != bar_signature: 
+                        self._last_bar_signature[key] = bar_signature 
                         records.append(bar)
 
         records.sort(key=_market_record_time)
@@ -486,7 +486,7 @@ class MT5MarketDataAdapter(HistoricalMarketDataAdapter, LiveMarketDataAdapter):
                     "MetaTrader5 is not installed. Install it on the Windows host "
                     "running the MT5 terminal."
                 ) from exc
-            self._client = module  # type: ignore[assignment]
+            self._client = module
         return self._client
 
     @staticmethod
