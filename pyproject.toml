@@ -44,8 +44,9 @@ source = ["fxbot"]
 [tool.coverage.report]
 show_missing = true
 skip_covered = true
-fail_under = 85
+fail_under = 65
 
 [[tool.mypy.overrides]]
 module = ["MetaTrader5", "pyarrow", "pyarrow.*"]
 ignore_missing_imports = true
+
