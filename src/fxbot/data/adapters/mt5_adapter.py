@@ -35,11 +35,11 @@ from fxbot.data.adapters.base import (
 )
 from fxbot.domain.enums import DataKind, Timeframe
 from fxbot.domain.models import (
+    OHLC,
     Bar,
     HistoricalDataRequest,
     LiveSubscription,
     MarketDataRecord,
-    OHLC,
     SymbolSpec,
     Tick,
 )

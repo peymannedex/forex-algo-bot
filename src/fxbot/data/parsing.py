@@ -8,7 +8,7 @@ from typing import Any
 from fxbot.data.schemas import BarCSVSchema, BarQuoteMode, SpreadUnit, TickCSVSchema
 from fxbot.data.time_utils import parse_timestamp
 from fxbot.domain.enums import Timeframe
-from fxbot.domain.models import Bar, OHLC, SymbolSpec, Tick
+from fxbot.domain.models import OHLC, Bar, SymbolSpec, Tick
 
 
 class RowParseError(ValueError):

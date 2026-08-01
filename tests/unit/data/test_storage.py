@@ -4,7 +4,7 @@ import pytest
 
 from fxbot.data.storage import ParquetPartitionStore, ParquetStorageError
 from fxbot.domain.enums import DataKind, Timeframe
-from fxbot.domain.models import Bar, HistoricalDataRequest, OHLC, Tick
+from fxbot.domain.models import OHLC, Bar, HistoricalDataRequest, Tick
 
 
 def test_store_partitions_ticks_by_symbol_year_and_month_and_reads_sorted(tmp_path) -> None:

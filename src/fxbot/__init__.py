@@ -1,6 +1,6 @@
 """Modular event-driven algorithmic foreign-exchange trading platform."""
 
-from fxbot.domain.models import Bar, OHLC, SymbolSpec, Tick
+from fxbot.domain.models import OHLC, Bar, SymbolSpec, Tick
 
-__all__ = ["Bar", "OHLC", "SymbolSpec", "Tick"]
+__all__ = ["OHLC", "Bar", "SymbolSpec", "Tick"]
 __version__ = "0.1.0"

@@ -7,22 +7,22 @@ from fxbot.domain.enums import (
     Timeframe,
 )
 from fxbot.domain.models import (
+    OHLC,
     Bar,
     HistoricalDataRequest,
     LiveSubscription,
     MarketDataRecord,
-    OHLC,
     SymbolSpec,
     Tick,
 )
 
 __all__ = [
+    "OHLC",
     "Bar",
     "DataKind",
     "HistoricalDataRequest",
     "LiveSubscription",
     "MarketDataRecord",
-    "OHLC",
     "ParseErrorPolicy",
     "QueueOverflowPolicy",
     "SymbolSpec",

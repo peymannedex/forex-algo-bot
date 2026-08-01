@@ -3,7 +3,7 @@ from datetime import UTC, datetime
 import pytest
 
 from fxbot.domain.enums import DataKind, Timeframe
-from fxbot.domain.models import Bar, HistoricalDataRequest, OHLC, SymbolSpec, Tick
+from fxbot.domain.models import OHLC, Bar, HistoricalDataRequest, SymbolSpec, Tick
 
 
 def test_tick_normalizes_time_and_calculates_spread() -> None:

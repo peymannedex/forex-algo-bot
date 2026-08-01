@@ -24,7 +24,7 @@ from typing import Any, TypeVar
 from uuid import uuid4
 
 from fxbot.domain.enums import DataKind, Timeframe
-from fxbot.domain.models import Bar, HistoricalDataRequest, MarketDataRecord, OHLC, Tick
+from fxbot.domain.models import OHLC, Bar, HistoricalDataRequest, MarketDataRecord, Tick
 
 _SCHEMA_VERSION = 1
 _SAFE_PARTITION_VALUE = re.compile(r"^[A-Z0-9._-]+$")

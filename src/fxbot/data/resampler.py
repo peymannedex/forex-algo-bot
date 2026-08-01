@@ -19,7 +19,7 @@ from datetime import UTC, datetime, timedelta
 from enum import StrEnum
 
 from fxbot.domain.enums import Timeframe
-from fxbot.domain.models import Bar, OHLC, Tick
+from fxbot.domain.models import OHLC, Bar, Tick
 
 
 class ResamplingError(ValueError):
