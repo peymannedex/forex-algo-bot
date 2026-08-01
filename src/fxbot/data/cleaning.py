@@ -8,6 +8,7 @@ important because central-bank and macro releases can produce genuine jumps.
 
 from __future__ import annotations
 
+import itertools
 from collections.abc import Callable, Iterable, Mapping
 from dataclasses import dataclass, field
 from datetime import datetime
@@ -334,7 +335,7 @@ class MarketDataCleaner:
             series = [items[index] for index in indices]
             returns = [
                 log(current.mid / previous.mid)
-                for previous, current in zip(series, series[1:], strict=False)
+                for previous, current in itertools.pairwise(series)
             ]
             center = median(returns)
             absolute_deviations = [abs(value - center) for value in returns]

@@ -19,6 +19,7 @@ Important limitations:
 from __future__ import annotations
 
 import asyncio
+import contextlib
 import importlib
 from collections.abc import AsyncIterator, Iterator
 from dataclasses import dataclass
@@ -321,13 +322,11 @@ class MT5MarketDataAdapter(HistoricalMarketDataAdapter, LiveMarketDataAdapter):
             records = await asyncio.to_thread(self._poll_once, subscription)
             for record in records:
                 yield record
-            try:
+            with contextlib.suppress(TimeoutError):
                 await asyncio.wait_for(
                     stop_event.wait(),
                     timeout=self._poll_interval_seconds,
                 )
-            except TimeoutError:
-                pass
 
     def _poll_once(self, subscription: LiveSubscription) -> tuple[MarketDataRecord, ...]:
         records: list[MarketDataRecord] = []
