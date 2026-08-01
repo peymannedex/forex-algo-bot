@@ -55,14 +55,15 @@ class PartitionRef:
             raise ValueError("year must be 1970 or later")
         object.__setattr__(self, "symbol", normalized)
         object.__setattr__(self, "kind", DataKind(self.kind))
+        timeframe = self.timeframe
         if self.kind is DataKind.TICK:
-            if self.timeframe not in (None, Timeframe.TICK):
+            if timeframe is not None and timeframe is not Timeframe.TICK:
                 raise ValueError("Tick partitions cannot have a bar timeframe")
             object.__setattr__(self, "timeframe", None)
         else:
-            if self.timeframe in (None, Timeframe.TICK):
+            if timeframe is None or timeframe is Timeframe.TICK:
                 raise ValueError("Bar partitions require a non-tick timeframe")
-            object.__setattr__(self, "timeframe", Timeframe.parse(self.timeframe))
+            object.__setattr__(self, "timeframe", Timeframe.parse(timeframe))
 
 
 @dataclass(frozen=True, slots=True)

@@ -255,14 +255,15 @@ class HistoricalDataRequest:
         if self.start is not None and self.end is not None and self.start >= self.end:
             raise ValueError("start must be earlier than end")
 
+        timeframe = self.timeframe
         if self.kind is DataKind.TICK:
-            if self.timeframe not in (None, Timeframe.TICK):
+            if timeframe is not None and timeframe is not Timeframe.TICK:
                 raise ValueError("Tick requests cannot specify a bar timeframe")
             object.__setattr__(self, "timeframe", Timeframe.TICK)
         else:
-            if self.timeframe in (None, Timeframe.TICK):
+            if timeframe is None or timeframe is Timeframe.TICK:
                 raise ValueError("Bar requests require a non-tick timeframe")
-            object.__setattr__(self, "timeframe", Timeframe.parse(self.timeframe))
+            object.__setattr__(self, "timeframe", Timeframe.parse(timeframe))
 
     def contains(self, timestamp: datetime) -> bool:
         value = _utc(timestamp, "timestamp")
