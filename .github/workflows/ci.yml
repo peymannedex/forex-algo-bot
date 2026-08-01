@@ -1,4 +1,4 @@
-name: CI
+﻿name: CI
 
 on:
   push:
@@ -19,6 +19,8 @@ jobs:
           cache: pip
       - run: python -m pip install --upgrade pip
       - run: pip install -r requirements-dev.txt
+      - run: pip install -e .
       - run: ruff check src tests
       - run: mypy src
       - run: pytest --cov=fxbot --cov-report=term-missing
+
