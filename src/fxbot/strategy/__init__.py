@@ -1,4 +1,4 @@
-"""Strategy contracts, context, indicators, and regime classification."""
+"""Strategy contracts, context, indicators, regimes, filters, and implementations."""
 
 from fxbot.strategy.base import (
     SignalDeduplicator,
@@ -6,6 +6,7 @@ from fxbot.strategy.base import (
     StrategyContractError,
     StrategyRuntime,
 )
+from fxbot.strategy.breakout import BreakoutStrategy, BreakoutStrategyConfig
 from fxbot.strategy.context import (
     ContextIssue,
     ContextIssueCode,
@@ -13,6 +14,14 @@ from fxbot.strategy.context import (
     MarketSeries,
     MultiTimeframeContext,
     timeframe_age_tolerance,
+)
+from fxbot.strategy.filters import (
+    FilterResult,
+    MarketFilter,
+    StrategyFilterConfig,
+    atr_bracket,
+    clamp_confidence,
+    format_metadata,
 )
 from fxbot.strategy.indicators import (
     IndicatorConfig,
@@ -28,6 +37,7 @@ from fxbot.strategy.indicators import (
     simple_moving_average,
     true_range,
 )
+from fxbot.strategy.mean_reversion import MeanReversionConfig, MeanReversionStrategy
 from fxbot.strategy.models import (
     IndicatorSnapshot,
     MarketRegime,
@@ -37,17 +47,27 @@ from fxbot.strategy.models import (
     StrategyConfig,
     StrategyDecision,
 )
+from fxbot.strategy.momentum import MomentumStrategy, MomentumStrategyConfig
 from fxbot.strategy.regime import RegimeClassifier, RegimeConfig
+from fxbot.strategy.trend_following import TrendFollowingConfig, TrendFollowingStrategy
 
 __all__ = [
+    "BreakoutStrategy",
+    "BreakoutStrategyConfig",
     "ContextIssue",
     "ContextIssueCode",
+    "FilterResult",
     "IndicatorConfig",
     "IndicatorError",
     "IndicatorSnapshot",
     "MarketContextBuilder",
+    "MarketFilter",
     "MarketRegime",
     "MarketSeries",
+    "MeanReversionConfig",
+    "MeanReversionStrategy",
+    "MomentumStrategy",
+    "MomentumStrategyConfig",
     "MultiTimeframeContext",
     "RegimeAssessment",
     "RegimeClassifier",
@@ -60,11 +80,17 @@ __all__ = [
     "StrategyConfig",
     "StrategyContractError",
     "StrategyDecision",
+    "StrategyFilterConfig",
     "StrategyRuntime",
+    "TrendFollowingConfig",
+    "TrendFollowingStrategy",
+    "atr_bracket",
     "average_spread",
     "average_true_range",
     "calculate_indicators",
+    "clamp_confidence",
     "exponential_moving_average",
+    "format_metadata",
     "momentum",
     "realized_volatility",
     "relative_strength_index",
