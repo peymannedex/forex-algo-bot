@@ -192,3 +192,33 @@ def classifier_factory() -> Any:
         )
 
     return factory
+
+@pytest.fixture
+def make_series_ohlc() -> Any:
+    def factory(
+        rows: list[tuple[float, float, float, float]],
+        *,
+        timeframe: Timeframe = Timeframe.M5,
+        spread: float = 0.0001,
+        volumes: list[int] | None = None,
+    ) -> MarketSeries:
+        bars: list[Bar] = []
+        for index, (open_price, high, low, close) in enumerate(rows):
+            mid = OHLC(open_price, high, low, close)
+            half = spread / 2.0
+            bid = OHLC(open_price - half, high - half, low - half, close - half)
+            ask = OHLC(open_price + half, high + half, low + half, close + half)
+            bars.append(
+                Bar(
+                    symbol="EURUSD",
+                    open_time=BASE + timedelta(seconds=(timeframe.seconds or 60) * index),
+                    timeframe=timeframe,
+                    bid=bid,
+                    ask=ask,
+                    mid_ohlc=mid,
+                    tick_volume=100 if volumes is None else volumes[index],
+                )
+            )
+        return MarketSeries("EURUSD", timeframe, tuple(bars))
+
+    return factory
