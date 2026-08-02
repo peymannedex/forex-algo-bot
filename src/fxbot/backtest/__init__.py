@@ -15,6 +15,11 @@ from fxbot.backtest.config import (
     SlippageConfig,
     SwapConfig,
 )
+from fxbot.backtest.drawdown import (
+    DrawdownAnalysis,
+    DrawdownPeriod,
+    analyze_drawdowns,
+)
 from fxbot.backtest.engine import (
     AllowAllRiskGate,
     BacktestEngine,
@@ -38,7 +43,31 @@ from fxbot.backtest.events import (
     TimeInForce,
     market_record_time,
 )
+from fxbot.backtest.metrics import (
+    BenchmarkComparison,
+    PerformanceMetrics,
+    PeriodReturn,
+    calculate_performance,
+    calendar_returns,
+    compare_benchmark,
+    drawdown_metrics,
+    equity_returns,
+)
+from fxbot.backtest.monte_carlo import (
+    MonteCarloConfig,
+    MonteCarloMethod,
+    MonteCarloPath,
+    MonteCarloQuantile,
+    MonteCarloResult,
+    simulate_monte_carlo,
+)
+from fxbot.backtest.reporting import (
+    PerformanceBreakdown,
+    PerformanceReport,
+    build_performance_report,
+)
 from fxbot.backtest.results import BacktestResult, EquityPoint, equity_point
+from fxbot.backtest.trades import TradeExcursion, TradeStatistics, analyze_trades
 
 __all__ = [
     "AllowAllRiskGate",
@@ -48,9 +77,12 @@ __all__ = [
     "BacktestEvent",
     "BacktestResult",
     "BacktestStrategy",
+    "BenchmarkComparison",
     "BrokerSnapshot",
     "ClosedTrade",
     "CommissionConfig",
+    "DrawdownAnalysis",
+    "DrawdownPeriod",
     "EquityPoint",
     "EventKind",
     "ExecutionConfig",
@@ -59,12 +91,21 @@ __all__ = [
     "HistoricalClockError",
     "InstrumentConfig",
     "MarketEvent",
+    "MonteCarloConfig",
+    "MonteCarloMethod",
+    "MonteCarloPath",
+    "MonteCarloQuantile",
+    "MonteCarloResult",
     "NetPosition",
     "OrderRequest",
     "OrderSide",
     "OrderState",
     "OrderStatus",
     "OrderType",
+    "PerformanceBreakdown",
+    "PerformanceMetrics",
+    "PerformanceReport",
+    "PeriodReturn",
     "RiskGate",
     "RiskGateResult",
     "SimulatedBroker",
@@ -73,6 +114,17 @@ __all__ = [
     "StrategyDecisionAdapter",
     "SwapConfig",
     "TimeInForce",
+    "TradeExcursion",
+    "TradeStatistics",
+    "analyze_drawdowns",
+    "analyze_trades",
+    "build_performance_report",
+    "calculate_performance",
+    "calendar_returns",
+    "compare_benchmark",
+    "drawdown_metrics",
     "equity_point",
+    "equity_returns",
     "market_record_time",
+    "simulate_monte_carlo",
 ]
