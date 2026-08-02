@@ -193,7 +193,9 @@ def _cagr(result: BacktestResult) -> float:
     if elapsed <= 0.0 or result.initial_equity <= 0.0 or result.final_equity <= 0.0:
         return 0.0
     years = elapsed / _SECONDS_PER_YEAR
-    return (result.final_equity / result.initial_equity) ** (1.0 / years) - 1.0
+    return float(
+        (result.final_equity / result.initial_equity) ** (1.0 / years) - 1.0
+    )
 
 
 def _infer_periods_per_year(equity_curve: tuple[EquityPoint, ...]) -> float:

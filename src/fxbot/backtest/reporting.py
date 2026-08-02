@@ -8,7 +8,7 @@ from collections.abc import Callable, Mapping
 from dataclasses import asdict, dataclass
 from datetime import UTC, datetime
 from math import inf
-from typing import Any
+from typing import Any, cast
 
 from fxbot.backtest.broker import ClosedTrade
 from fxbot.backtest.drawdown import DrawdownAnalysis, analyze_drawdowns
@@ -62,7 +62,7 @@ class PerformanceReport:
     def to_dict(self) -> dict[str, Any]:
         """Return a JSON-compatible representation with explicit infinity handling."""
 
-        return _json_safe(asdict(self))
+        return cast(dict[str, Any], _json_safe(asdict(self)))
 
     def to_json(self, *, indent: int | None = 2) -> str:
         """Serialize the report using stable key ordering."""
