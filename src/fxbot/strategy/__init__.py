@@ -1,4 +1,4 @@
-"""Strategy contracts, context, indicators, regimes, filters, and implementations."""
+"""Strategy contracts, indicators, regimes, core systems, and SMC tooling."""
 
 from fxbot.strategy.base import (
     SignalDeduplicator,
@@ -23,6 +23,13 @@ from fxbot.strategy.filters import (
     clamp_confidence,
     format_metadata,
 )
+from fxbot.strategy.imbalances import (
+    FairValueGap,
+    ImbalanceConfig,
+    ImbalanceSide,
+    detect_fair_value_gaps,
+    nearest_fair_value_gap,
+)
 from fxbot.strategy.indicators import (
     IndicatorConfig,
     IndicatorError,
@@ -37,6 +44,32 @@ from fxbot.strategy.indicators import (
     simple_moving_average,
     true_range,
 )
+from fxbot.strategy.liquidity import (
+    LiquidityConfig,
+    LiquidityPool,
+    LiquiditySide,
+    LiquiditySweep,
+    detect_liquidity_pools,
+    detect_liquidity_sweeps,
+    nearest_liquidity_target,
+)
+from fxbot.strategy.market_structure import (
+    DealingRangeZone,
+    DisplacementCandle,
+    MarketStructureConfig,
+    MarketStructureState,
+    StructureConfluence,
+    StructureDirection,
+    StructureEvent,
+    StructureEventKind,
+    SwingKind,
+    SwingPoint,
+    analyze_market_structure,
+    detect_displacements,
+    detect_structure_events,
+    detect_swings,
+    structure_confluence,
+)
 from fxbot.strategy.mean_reversion import MeanReversionConfig, MeanReversionStrategy
 from fxbot.strategy.models import (
     IndicatorSnapshot,
@@ -48,7 +81,15 @@ from fxbot.strategy.models import (
     StrategyDecision,
 )
 from fxbot.strategy.momentum import MomentumStrategy, MomentumStrategyConfig
+from fxbot.strategy.order_blocks import (
+    OrderBlock,
+    OrderBlockConfig,
+    OrderBlockSide,
+    detect_order_blocks,
+    nearest_order_block,
+)
 from fxbot.strategy.regime import RegimeClassifier, RegimeConfig
+from fxbot.strategy.smc import SMCStrategy, SMCStrategyConfig
 from fxbot.strategy.trend_following import TrendFollowingConfig, TrendFollowingStrategy
 
 __all__ = [
@@ -56,24 +97,40 @@ __all__ = [
     "BreakoutStrategyConfig",
     "ContextIssue",
     "ContextIssueCode",
+    "DealingRangeZone",
+    "DisplacementCandle",
+    "FairValueGap",
     "FilterResult",
+    "ImbalanceConfig",
+    "ImbalanceSide",
     "IndicatorConfig",
     "IndicatorError",
     "IndicatorSnapshot",
+    "LiquidityConfig",
+    "LiquidityPool",
+    "LiquiditySide",
+    "LiquiditySweep",
     "MarketContextBuilder",
     "MarketFilter",
     "MarketRegime",
     "MarketSeries",
+    "MarketStructureConfig",
+    "MarketStructureState",
     "MeanReversionConfig",
     "MeanReversionStrategy",
     "MomentumStrategy",
     "MomentumStrategyConfig",
     "MultiTimeframeContext",
+    "OrderBlock",
+    "OrderBlockConfig",
+    "OrderBlockSide",
     "RegimeAssessment",
     "RegimeClassifier",
     "RegimeConfig",
     "RegimeConfluence",
     "RollingIndicatorState",
+    "SMCStrategy",
+    "SMCStrategyConfig",
     "SignalAction",
     "SignalDeduplicator",
     "Strategy",
@@ -82,19 +139,37 @@ __all__ = [
     "StrategyDecision",
     "StrategyFilterConfig",
     "StrategyRuntime",
+    "StructureConfluence",
+    "StructureDirection",
+    "StructureEvent",
+    "StructureEventKind",
+    "SwingKind",
+    "SwingPoint",
     "TrendFollowingConfig",
     "TrendFollowingStrategy",
+    "analyze_market_structure",
     "atr_bracket",
     "average_spread",
     "average_true_range",
     "calculate_indicators",
     "clamp_confidence",
+    "detect_displacements",
+    "detect_fair_value_gaps",
+    "detect_liquidity_pools",
+    "detect_liquidity_sweeps",
+    "detect_order_blocks",
+    "detect_structure_events",
+    "detect_swings",
     "exponential_moving_average",
     "format_metadata",
     "momentum",
+    "nearest_fair_value_gap",
+    "nearest_liquidity_target",
+    "nearest_order_block",
     "realized_volatility",
     "relative_strength_index",
     "simple_moving_average",
+    "structure_confluence",
     "timeframe_age_tolerance",
     "true_range",
 ]
