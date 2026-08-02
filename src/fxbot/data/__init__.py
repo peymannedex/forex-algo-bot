@@ -1,5 +1,23 @@
-"""Canonical market-data ingestion, cleaning, resampling, and storage."""
+"""Canonical market-data ingestion, cleaning, resampling, catalog, and storage."""
 
+from fxbot.data.catalog import (
+    CatalogConflictError,
+    CatalogCorruptionError,
+    CatalogError,
+    CoverageInterval,
+    DataCatalog,
+    DatasetBatch,
+    DatasetKey,
+    DatasetRegistration,
+)
+from fxbot.data.checkpoints import (
+    CheckpointCorruptionError,
+    CheckpointError,
+    CheckpointKey,
+    CheckpointRegressionError,
+    CheckpointStore,
+    IngestionCheckpoint,
+)
 from fxbot.data.resampler import (
     LateTickPolicy,
     OutOfOrderTickError,
@@ -14,6 +32,20 @@ from fxbot.data.storage import (
 )
 
 __all__ = [
+    "CatalogConflictError",
+    "CatalogCorruptionError",
+    "CatalogError",
+    "CheckpointCorruptionError",
+    "CheckpointError",
+    "CheckpointKey",
+    "CheckpointRegressionError",
+    "CheckpointStore",
+    "CoverageInterval",
+    "DataCatalog",
+    "DatasetBatch",
+    "DatasetKey",
+    "DatasetRegistration",
+    "IngestionCheckpoint",
     "LateTickPolicy",
     "OutOfOrderTickError",
     "ParquetPartitionStore",
