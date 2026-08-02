@@ -1,5 +1,6 @@
-"""Risk models and deterministic Forex position-sizing services."""
+"""Risk models, position sizing, portfolio analytics, and hard risk controls."""
 
+from fxbot.risk.limits import PortfolioRiskLimits, RiskLimitCode, RiskViolation
 from fxbot.risk.models import (
     AccountSnapshot,
     BrokerVolumeConstraints,
@@ -10,6 +11,14 @@ from fxbot.risk.models import (
     SizingMethod,
     SizingStatus,
     TradeSide,
+)
+from fxbot.risk.portfolio import (
+    PendingOrderExposure,
+    PortfolioAnalyzer,
+    PortfolioMetrics,
+    PortfolioSnapshot,
+    PositionExposure,
+    TradeProposal,
 )
 from fxbot.risk.position_sizing import (
     CurrencyConversionError,
@@ -22,6 +31,7 @@ from fxbot.risk.position_sizing import (
     normalize_volume_down,
     risk_per_lot,
 )
+from fxbot.risk.risk_guard import RiskDecision, RiskDecisionStatus, RiskGuard
 
 __all__ = [
     "AccountSnapshot",
@@ -30,13 +40,25 @@ __all__ = [
     "CurrencyConverter",
     "IdentityCurrencyConverter",
     "InstrumentRiskSpec",
+    "PendingOrderExposure",
+    "PortfolioAnalyzer",
+    "PortfolioMetrics",
+    "PortfolioRiskLimits",
+    "PortfolioSnapshot",
+    "PositionExposure",
     "PositionSizer",
     "PositionSizingPolicy",
     "PositionSizingRequest",
     "PositionSizingResult",
+    "RiskDecision",
+    "RiskDecisionStatus",
+    "RiskGuard",
+    "RiskLimitCode",
+    "RiskViolation",
     "SizingMethod",
     "SizingStatus",
     "StaticCurrencyConverter",
+    "TradeProposal",
     "TradeSide",
     "convert_amount",
     "margin_per_lot",
