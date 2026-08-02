@@ -1,4 +1,4 @@
-"""Risk models, position sizing, portfolio analytics, and hard risk controls."""
+"""Risk models, sizing, portfolio controls, and position lifecycle management."""
 
 from fxbot.risk.limits import PortfolioRiskLimits, RiskLimitCode, RiskViolation
 from fxbot.risk.models import (
@@ -31,25 +31,65 @@ from fxbot.risk.position_sizing import (
     normalize_volume_down,
     risk_per_lot,
 )
+from fxbot.risk.positions import (
+    ManagedPosition,
+    PositionLifecycle,
+    PositionLifecycleError,
+    PositionStatus,
+    PositionValuation,
+)
+from fxbot.risk.reconciliation import (
+    BrokerFill,
+    BrokerPositionSnapshot,
+    FillAction,
+    FillReconciler,
+    FillReconciliationResult,
+    PositionLedger,
+    PositionReconciler,
+    ReconciliationIssue,
+    ReconciliationIssueCode,
+    ReconciliationStatus,
+)
 from fxbot.risk.risk_guard import RiskDecision, RiskDecisionStatus, RiskGuard
+from fxbot.risk.stops import (
+    StopManagementPolicy,
+    StopManager,
+    StopUpdate,
+    StopUpdateReason,
+)
 
 __all__ = [
     "AccountSnapshot",
+    "BrokerFill",
+    "BrokerPositionSnapshot",
     "BrokerVolumeConstraints",
     "CurrencyConversionError",
     "CurrencyConverter",
+    "FillAction",
+    "FillReconciler",
+    "FillReconciliationResult",
     "IdentityCurrencyConverter",
     "InstrumentRiskSpec",
+    "ManagedPosition",
     "PendingOrderExposure",
     "PortfolioAnalyzer",
     "PortfolioMetrics",
     "PortfolioRiskLimits",
     "PortfolioSnapshot",
     "PositionExposure",
+    "PositionLedger",
+    "PositionLifecycle",
+    "PositionLifecycleError",
+    "PositionReconciler",
     "PositionSizer",
     "PositionSizingPolicy",
     "PositionSizingRequest",
     "PositionSizingResult",
+    "PositionStatus",
+    "PositionValuation",
+    "ReconciliationIssue",
+    "ReconciliationIssueCode",
+    "ReconciliationStatus",
     "RiskDecision",
     "RiskDecisionStatus",
     "RiskGuard",
@@ -58,6 +98,10 @@ __all__ = [
     "SizingMethod",
     "SizingStatus",
     "StaticCurrencyConverter",
+    "StopManagementPolicy",
+    "StopManager",
+    "StopUpdate",
+    "StopUpdateReason",
     "TradeProposal",
     "TradeSide",
     "convert_amount",
