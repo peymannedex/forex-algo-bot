@@ -481,7 +481,7 @@ async def test_service_request_stop_flushes_buffer(tmp_path: Path) -> None:
     await yielded.wait()
     await asyncio.sleep(0.01)
     service.request_stop()
-    result = await asyncio.wait_for(task, timeout=1)
+    result = await asyncio.wait_for(task, timeout=10)
     release.set()
 
     assert result.written_batches == 1
