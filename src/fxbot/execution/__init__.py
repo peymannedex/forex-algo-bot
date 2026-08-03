@@ -1,5 +1,6 @@
-"""Live and paper execution contracts, routing, and reconciliation."""
+"""Live and paper execution contracts, routing, adapters, and reconciliation."""
 
+from fxbot.execution.adapters import MT5BrokerAdapter, MT5ExecutionConfig
 from fxbot.execution.broker import (
     BrokerAdapter,
     ExecutionError,
@@ -11,6 +12,13 @@ from fxbot.execution.broker import (
     TransientBrokerError,
     UnknownSubmissionError,
     ensure_unique_fills,
+)
+from fxbot.execution.connection import (
+    MT5ConnectionManager,
+    MT5ConnectionSnapshot,
+    MT5ExecutionClient,
+    MT5ExecutionConnectionConfig,
+    ReconnectPolicy,
 )
 from fxbot.execution.idempotency import (
     IdempotencyConflictError,
@@ -38,12 +46,31 @@ from fxbot.execution.models import (
     RiskDecision,
     TimeInForce,
 )
-from fxbot.execution.paper import PaperBroker, PaperBrokerConfig
-from fxbot.execution.router import (
-    AllowAllRiskAuthorizer,
-    ExecutionRouter,
-    RetryPolicy,
+from fxbot.execution.mt5_mapping import (
+    MT5SymbolSpec,
+    build_mt5_request,
+    client_order_comment,
+    normalize_price,
+    normalize_volume,
+    validate_entry_prices,
+    validate_freeze_distance,
 )
+from fxbot.execution.mt5_recovery import (
+    MT5RetcodeCategory,
+    MT5RetcodeClassification,
+    classification_from_result,
+    classify_mt5_retcode,
+    raise_for_mt5_result,
+)
+from fxbot.execution.paper import PaperBroker, PaperBrokerConfig
+from fxbot.execution.reconciliation import (
+    LiveMT5Reconciler,
+    MT5PositionSnapshot,
+    MT5ReconciliationReport,
+    ReconciliationIssue,
+    ReconciliationIssueKind,
+)
+from fxbot.execution.router import AllowAllRiskAuthorizer, ExecutionRouter, RetryPolicy
 from fxbot.execution.runtime import ExecutionRuntime, SyncResult
 from fxbot.execution.safety import ExecutionControl, ExecutionControlState
 
@@ -65,6 +92,18 @@ __all__ = [
     "IdempotencyRecord",
     "InMemoryIdempotencyStore",
     "InvalidOrderTransitionError",
+    "LiveMT5Reconciler",
+    "MT5BrokerAdapter",
+    "MT5ConnectionManager",
+    "MT5ConnectionSnapshot",
+    "MT5ExecutionClient",
+    "MT5ExecutionConfig",
+    "MT5ExecutionConnectionConfig",
+    "MT5PositionSnapshot",
+    "MT5ReconciliationReport",
+    "MT5RetcodeCategory",
+    "MT5RetcodeClassification",
+    "MT5SymbolSpec",
     "Metadata",
     "OrderIntent",
     "OrderNotFoundError",
@@ -76,6 +115,9 @@ __all__ = [
     "PaperBrokerConfig",
     "PermanentBrokerError",
     "Quote",
+    "ReconciliationIssue",
+    "ReconciliationIssueKind",
+    "ReconnectPolicy",
     "RetryPolicy",
     "RiskAuthorizer",
     "RiskDecision",
@@ -83,8 +125,17 @@ __all__ = [
     "TimeInForce",
     "TransientBrokerError",
     "UnknownSubmissionError",
+    "build_mt5_request",
+    "classification_from_result",
+    "classify_mt5_retcode",
+    "client_order_comment",
     "ensure_unique_fills",
+    "normalize_price",
+    "normalize_volume",
+    "raise_for_mt5_result",
     "transition_allowed",
+    "validate_entry_prices",
+    "validate_freeze_distance",
     "validate_transition",
     "with_status",
 ]
