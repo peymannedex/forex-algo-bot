@@ -12,12 +12,22 @@ FXBOT_LIVE_TRADING_ENABLED=false
 FXBOT_DEMO_ORDER_SUBMISSION_ENABLED=false
 ```
 
-## Prerequisites
+## MT5 server-time normalization
 
-1. Keep MetaTrader 5 open and logged into a demo account.
-2. Enable the configured symbols in Market Watch.
-3. Append `config/.env.paper-live-feed.example` to the external `.env`.
-4. Keep the real strategy selected for soak operation.
+Some MT5 brokers expose server-local timestamps through the Python bridge.
+Measure the difference between a current MT5 tick and real UTC, then configure
+the positive number of minutes by which MT5 is ahead of UTC.
+
+For a terminal returning timestamps three hours ahead:
+
+```text
+FXBOT_PAPER_LIVE_MT5_SERVER_UTC_OFFSET_MINUTES=180
+FXBOT_PAPER_LIVE_MAX_FUTURE_SKEW_SECONDS=5
+```
+
+The live source subtracts the configured offset before records enter the
+strategy. Any record that remains future-dated beyond the configured tolerance
+is rejected. Recheck this value when the broker changes daylight-saving time.
 
 ## Five-cycle commissioning test
 
@@ -27,13 +37,6 @@ FXBOT_DEMO_ORDER_SUBMISSION_ENABLED=false
   -EnvFile "C:\forex-algo-bot\config\.env" `
   -Strategy trend `
   -MaxCycles 5
-```
-
-This may take more than 25 minutes with M5 bars. A clean result ends with a JSON
-summary and writes evidence under:
-
-```text
-C:\forex-algo-bot\evidence\paper-soak
 ```
 
 ## Continuous soak
@@ -50,8 +53,6 @@ Stop with `Ctrl+C`, or create:
 ```text
 C:\forex-algo-bot\var\state\STOP_PAPER_SOAK
 ```
-
-The stop file is removed automatically at the next service start.
 
 ## Evidence
 

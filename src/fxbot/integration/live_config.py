@@ -27,6 +27,8 @@ class PaperLiveFeedSettings(BaseSettings):
     evidence_directory: Path = Path("C:/forex-algo-bot/evidence/paper-soak")
     report_interval_seconds: float = 60.0
     stop_filename: str = "STOP_PAPER_SOAK"
+    mt5_server_utc_offset_minutes: int = 0
+    max_future_skew_seconds: float = 5.0
 
     @field_validator(
         "poll_interval_seconds",
@@ -40,6 +42,14 @@ class PaperLiveFeedSettings(BaseSettings):
             raise ValueError("time interval must be positive and finite")
         return number
 
+    @field_validator("max_future_skew_seconds")
+    @classmethod
+    def _non_negative_seconds(cls, value: float) -> float:
+        number = float(value)
+        if not isfinite(number) or number < 0.0:
+            raise ValueError("future skew must be finite and non-negative")
+        return number
+
     @field_validator(
         "max_consecutive_errors",
         "history_bars_per_timeframe",
@@ -48,6 +58,13 @@ class PaperLiveFeedSettings(BaseSettings):
     def _positive_integer(cls, value: int) -> int:
         if value < 1:
             raise ValueError("value must be at least one")
+        return value
+
+    @field_validator("mt5_server_utc_offset_minutes")
+    @classmethod
+    def _bounded_server_offset(cls, value: int) -> int:
+        if not -1_440 <= value <= 1_440:
+            raise ValueError("MT5 server UTC offset must be within +/- 1440 minutes")
         return value
 
     @field_validator("stop_filename")
