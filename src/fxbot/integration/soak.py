@@ -11,6 +11,7 @@ from collections.abc import Callable
 from dataclasses import dataclass
 from datetime import UTC, datetime
 from pathlib import Path
+from typing import cast
 
 from fxbot.domain.enums import Timeframe
 from fxbot.domain.models import Bar, LiveSubscription, MarketDataRecord
@@ -293,11 +294,11 @@ class PaperLiveSoakRunner:
 
         try:
             while not stop_event.is_set():
-                if self.stop_file.exists():
-                    stop_event.set()
-                    break
-                if self._seconds_since(started) >= (max_seconds or float("inf")):
-                    stop_event.set()
+                if self._should_stop(
+                    stop_event,
+                    started=started,
+                    max_seconds=max_seconds,
+                ):
                     break
 
                 try:
@@ -307,41 +308,18 @@ class PaperLiveSoakRunner:
                         ComponentState.HEALTHY,
                         "read-only market-data source connected",
                     )
-
-                    async for record in self.source.stream(self.subscription):
-                        if stop_event.is_set() or self.stop_file.exists():
-                            stop_event.set()
-                            break
-
-                        frame = self.assembler.ingest(record)
-                        if frame is None:
-                            continue
-                        if (
-                            self.runtime.last_frame_at is not None
-                            and frame.quote.timestamp <= self.runtime.last_frame_at
-                        ):
-                            continue
-
-                        result = self.runtime.process(frame)
-                        self.evidence.record_cycle(result)
-                        consecutive_errors = 0
-                        processed_cycles += 1
-
-                        if (
-                            max_cycles is not None
-                            and processed_cycles >= max_cycles
-                        ):
-                            stop_event.set()
-                            break
-                        if (
-                            max_seconds is not None
-                            and self._seconds_since(started) >= max_seconds
-                        ):
-                            stop_event.set()
-                            break
+                    processed_cycles = await self._consume_stream(
+                        stop_event,
+                        started=started,
+                        max_cycles=max_cycles,
+                        max_seconds=max_seconds,
+                        processed_cycles=processed_cycles,
+                    )
 
                     if not stop_event.is_set():
-                        raise RuntimeError("live market-data stream ended unexpectedly")
+                        raise RuntimeError(
+                            "live market-data stream ended unexpectedly"
+                        )
                 except asyncio.CancelledError:
                     raise
                 except Exception as exc:
@@ -352,9 +330,17 @@ class PaperLiveSoakRunner:
                         f"{type(exc).__name__}: {exc}",
                     )
                     self.evidence.record_error(exc)
-                    if consecutive_errors >= self.settings.max_consecutive_errors:
+                    if (
+                        consecutive_errors
+                        >= self.settings.max_consecutive_errors
+                    ):
                         raise
-                    await asyncio.sleep(self.settings.reconnect_delay_seconds)
+                    await self._wait_for_stop(
+                        stop_event,
+                        self.settings.reconnect_delay_seconds,
+                    )
+                else:
+                    consecutive_errors = 0
                 finally:
                     with contextlib.suppress(Exception):
                         await self.source.disconnect()
@@ -368,6 +354,140 @@ class PaperLiveSoakRunner:
             summary = self.evidence.write_summary()
 
         return summary
+
+    async def _consume_stream(
+        self,
+        stop_event: asyncio.Event,
+        *,
+        started: datetime,
+        max_cycles: int | None,
+        max_seconds: float | None,
+        processed_cycles: int,
+    ) -> int:
+        iterator = self.source.stream(self.subscription).__aiter__()
+        next_record: asyncio.Future[MarketDataRecord] = (
+            asyncio.ensure_future(anext(iterator))
+        )
+
+        try:
+            while not stop_event.is_set():
+                if self._should_stop(
+                    stop_event,
+                    started=started,
+                    max_seconds=max_seconds,
+                ):
+                    break
+
+                stop_wait = asyncio.create_task(stop_event.wait())
+                timeout = self._next_check_delay(
+                    started=started,
+                    max_seconds=max_seconds,
+                )
+
+                try:
+                    waitables: set[asyncio.Future[object]] = {
+                        cast(asyncio.Future[object], next_record),
+                        cast(asyncio.Future[object], stop_wait),
+                    }
+                    done, _ = await asyncio.wait(
+                        waitables,
+                        timeout=timeout,
+                        return_when=asyncio.FIRST_COMPLETED,
+                    )
+                finally:
+                    if not stop_wait.done():
+                        stop_wait.cancel()
+                        with contextlib.suppress(asyncio.CancelledError):
+                            await stop_wait
+
+                if stop_wait in done or stop_event.is_set():
+                    break
+                if next_record not in done:
+                    continue
+
+                try:
+                    record = next_record.result()
+                except StopAsyncIteration:
+                    return processed_cycles
+
+                next_record = asyncio.ensure_future(anext(iterator))
+                frame = self.assembler.ingest(record)
+                if frame is None:
+                    continue
+                if (
+                    self.runtime.last_frame_at is not None
+                    and frame.quote.timestamp <= self.runtime.last_frame_at
+                ):
+                    continue
+
+                result = self.runtime.process(frame)
+                self.evidence.record_cycle(result)
+                processed_cycles += 1
+
+                if (
+                    max_cycles is not None
+                    and processed_cycles >= max_cycles
+                ):
+                    stop_event.set()
+                    break
+
+            return processed_cycles
+        finally:
+            if not next_record.done():
+                next_record.cancel()
+                with contextlib.suppress(asyncio.CancelledError):
+                    await next_record
+            else:
+                with contextlib.suppress(
+                    asyncio.CancelledError,
+                    StopAsyncIteration,
+                ):
+                    next_record.result()
+
+            close = getattr(iterator, "aclose", None)
+            if close is not None:
+                with contextlib.suppress(Exception):
+                    await close()
+
+    def _should_stop(
+        self,
+        stop_event: asyncio.Event,
+        *,
+        started: datetime,
+        max_seconds: float | None,
+    ) -> bool:
+        if stop_event.is_set():
+            return True
+        if self.stop_file.exists():
+            stop_event.set()
+            return True
+        if (
+            max_seconds is not None
+            and self._seconds_since(started) >= max_seconds
+        ):
+            stop_event.set()
+            return True
+        return False
+
+    def _next_check_delay(
+        self,
+        *,
+        started: datetime,
+        max_seconds: float | None,
+    ) -> float:
+        delay = self.settings.poll_interval_seconds
+        if max_seconds is None:
+            return delay
+        remaining = max_seconds - self._seconds_since(started)
+        return max(0.001, min(delay, remaining))
+
+    @staticmethod
+    async def _wait_for_stop(
+        stop_event: asyncio.Event,
+        seconds: float,
+    ) -> None:
+        with contextlib.suppress(TimeoutError):
+            await asyncio.wait_for(stop_event.wait(), timeout=seconds)
 
     def _seconds_since(self, started: datetime) -> float:
         return (self._clock() - started).total_seconds()
