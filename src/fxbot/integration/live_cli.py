@@ -140,6 +140,10 @@ async def _run(args: argparse.Namespace) -> int:
         "strategy": args.strategy,
         "paper_broker_only": True,
         "mt5_order_submission": False,
+        "mt5_server_utc_offset_minutes": (
+            live.mt5_server_utc_offset_minutes
+        ),
+        "max_future_skew_seconds": live.max_future_skew_seconds,
         "evidence_directory": str(live.evidence_directory),
         "stop_file": str(stop_file),
     }
